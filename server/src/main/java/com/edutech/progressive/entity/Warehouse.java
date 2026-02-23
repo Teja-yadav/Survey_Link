@@ -1,6 +1,12 @@
 package com.edutech.progressive.entity;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 public class Warehouse implements Comparable<Warehouse>{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int warehouseId;
     private int supplierId;
     private String warehouseName;
