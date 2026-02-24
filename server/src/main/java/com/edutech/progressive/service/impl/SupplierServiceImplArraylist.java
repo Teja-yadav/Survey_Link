@@ -1,15 +1,18 @@
 package com.edutech.progressive.service.impl;
 
-import java.util.ArrayList;
+import com.edutech.progressive.entity.Supplier;
+import com.edutech.progressive.service.SupplierService;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.edutech.progressive.entity.Supplier;
-import com.edutech.progressive.service.SupplierService;
-
+@Service("supplierArrayListService")
 public class SupplierServiceImplArraylist implements SupplierService {
-    List<Supplier> s = new ArrayList<>();
+
+    public final List<Supplier> s = new ArrayList<>();
+
     @Override
     public List<Supplier> getAllSuppliers() {
         return s;
@@ -18,7 +21,7 @@ public class SupplierServiceImplArraylist implements SupplierService {
     @Override
     public int addSupplier(Supplier supplier) {
         s.add(supplier);
-       return s.size();
+        return s.size();
     }
 
     @Override
@@ -27,4 +30,8 @@ public class SupplierServiceImplArraylist implements SupplierService {
         return s;
     }
 
+    @Override
+    public void emptyArrayList() {
+        s.clear();
+    }
 }
