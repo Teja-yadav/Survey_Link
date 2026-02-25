@@ -2,6 +2,8 @@ package com.edutech.progressive.controller;
 
 import com.edutech.progressive.entity.Supplier;
 import com.edutech.progressive.service.SupplierService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,16 +16,15 @@ import java.util.List;
 @RequestMapping("/supplier")
 public class SupplierController {
 
-    private final SupplierService supplierServiceJpa;
-    private final SupplierService supplierArray;
 
-    public SupplierController(
-            @Qualifier("supplierServiceImplJpa") SupplierService supplierServiceJpa,
-            @Qualifier("supplierArrayListService") SupplierService supplierArray) {
+    @Autowired
+    @Qualifier("supplierServiceImplJpa")
+    private SupplierService supplierServiceJpa;
 
-        this.supplierServiceJpa = supplierServiceJpa;
-        this.supplierArray = supplierArray;
-    }
+    @Autowired
+    @Qualifier("supplierServiceImplArraylist")
+    private SupplierService supplierArray;
+
 
     @GetMapping
     public ResponseEntity<List<Supplier>> getAllSuppliers() {
@@ -37,9 +38,14 @@ public class SupplierController {
     @GetMapping("/{supplierId}")
     public ResponseEntity<Supplier> getSupplierById(@PathVariable int supplierId) {
         try {
-            return ResponseEntity.ok(supplierServiceJpa.getSupplierById(supplierId));
+            Supplier s = supplierServiceJpa.getSupplierById(supplierId);
+            if (s != null) {
+                return ResponseEntity.ok(s);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
         } catch (SQLException e) {
-            return ResponseEntity.status(500).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
