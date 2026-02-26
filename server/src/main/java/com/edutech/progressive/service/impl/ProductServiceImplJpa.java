@@ -4,11 +4,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.edutech.progressive.entity.Product;
 import com.edutech.progressive.repository.ProductRepository;
 import com.edutech.progressive.service.ProductService;
-
+@Service
 public class ProductServiceImplJpa implements ProductService {
 
     @Autowired

@@ -16,7 +16,6 @@ import java.util.List;
 @RequestMapping("/supplier")
 public class SupplierController {
 
-
     @Autowired
     @Qualifier("supplierServiceImplJpa")
     private SupplierService supplierServiceJpa;
@@ -24,7 +23,6 @@ public class SupplierController {
     @Autowired
     @Qualifier("supplierServiceImplArraylist")
     private SupplierService supplierArray;
-
 
     @GetMapping
     public ResponseEntity<List<Supplier>> getAllSuppliers() {
