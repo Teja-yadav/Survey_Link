@@ -72,6 +72,8 @@ public class WarehouseServiceImplJpa implements WarehouseService {
     @Override
     public Warehouse getWarehouseById(int warehouseId) throws SQLException {
         try {
+            Warehouse w = warehouseRepository.findByWarehouseId(warehouseId);
+            if (w != null) return w;
             Optional<Warehouse> opt = warehouseRepository.findById(warehouseId);
             return opt.orElse(null);
         } catch (DataAccessException ex) {
@@ -79,10 +81,24 @@ public class WarehouseServiceImplJpa implements WarehouseService {
         }
     }
 
-    // Day 7 adds this with repository support
-    @Override
-    public List<Warehouse> getWarehouseBySupplier(int supplierId) throws SQLException {
-        // Placeholder per Day 6
-        return List.of();
+@Override
+public List<Warehouse> getWarehouseBySupplier(int supplierId) throws SQLException {
+    try {
+        List<Warehouse> viaFk = warehouseRepository.findAllBySupplierId(supplierId);
+        if (viaFk != null && !viaFk.isEmpty()) {
+            return viaFk;
+        }
+
+        List<Warehouse> viaAssociation = warehouseRepository.findAllBySupplier_SupplierId(supplierId);
+        if (viaAssociation != null && !viaAssociation.isEmpty()) {
+            return viaAssociation;
+        }
+
+        List<Warehouse> allViaDao = WarehouseService.super.getWarehouseBySupplier(supplierId);
+        return allViaDao;
+    } catch (DataAccessException ex) {
+        throw new SQLException("Failed to fetch warehouses for supplier id: " + supplierId, ex);
     }
+}
+
 }

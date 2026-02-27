@@ -30,7 +30,7 @@ public class ProductDAOImpl implements ProductDAO {
             ps.setString(2, product.getProductName());
             ps.setString(3, product.getProductDescription());
             ps.setInt(4, product.getQuantity());
-            ps.setDouble(5, product.getPrice());
+            ps.setLong(5, product.getPrice()); 
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -65,7 +65,7 @@ public class ProductDAOImpl implements ProductDAO {
             ps.setString(2, product.getProductName());
             ps.setString(3, product.getProductDescription());
             ps.setInt(4, product.getQuantity());
-            ps.setDouble(5, product.getPrice());
+            ps.setLong(5, product.getPrice()); // use setLong
             ps.setInt(6, product.getProductId());
             ps.executeUpdate();
         }

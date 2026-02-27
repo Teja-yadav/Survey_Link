@@ -26,7 +26,7 @@ public class WarehouseDAOImpl implements WarehouseDAO {
     public int addWarehouse(Warehouse warehouse) throws SQLException {
         String query = "INSERT INTO warehouse(supplier_id, warehouse_name, location, capacity) VALUES(?,?,?,?)";
         try (PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, warehouse.getSupplierId());        
+            ps.setInt(1, warehouse.getSupplierId());
             ps.setString(2, warehouse.getWarehouseName());
             ps.setString(3, warehouse.getLocation());
             ps.setInt(4, warehouse.getCapacity());
@@ -35,7 +35,7 @@ public class WarehouseDAOImpl implements WarehouseDAO {
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     int id = rs.getInt(1);
-                    warehouse.setWarehouseId(id);           
+                    warehouse.setWarehouseId(id);
                     return id;
                 }
             }
@@ -54,7 +54,7 @@ public class WarehouseDAOImpl implements WarehouseDAO {
                 }
             }
         }
-        return null; 
+        return null;
     }
 
     @Override

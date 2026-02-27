@@ -19,7 +19,6 @@ public class SupplierServiceImplJpa implements SupplierService {
     @Autowired
     SupplierRepository supplierRepository;
 
-    // Added for unit tests that instantiate the service with a repository
     public SupplierServiceImplJpa(SupplierRepository supplierRepository) {
         this.supplierRepository = supplierRepository;
     }
