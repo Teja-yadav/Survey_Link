@@ -1,6 +1,7 @@
 package com.edutech.progressive.entity;
 
 import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Product {
@@ -8,7 +9,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int productId;
 
-    @Column(name = "warehouse_id")
+    @Column(name = "warehouse_id", insertable = false, updatable = false)
     private int warehouseId;
 
     private String productName;
@@ -17,7 +18,8 @@ public class Product {
     private Long price;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "warehouse_id", insertable = false, updatable = false)
+    @JoinColumn(name = "warehouse_id") 
+    @JsonIgnore
     private Warehouse warehouse;
 
     public Product() {}

@@ -3,9 +3,7 @@ package com.edutech.progressive.service;
 import com.edutech.progressive.entity.Product;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-
 
 public interface ProductService {
 
@@ -19,15 +17,8 @@ public interface ProductService {
 
     void deleteProduct(int productId) throws SQLException;
 
-    // Do not implement these methods in ProductServiceImplJdbc.java class
-    public default List<Product> getAllProductByWarehouse(int warehouseId) throws SQLException {
-        List<Product> products = getAllProducts();
-        List<Product> filtered = new ArrayList<>();
-        for (Product p : products) {
-            if (p.getWarehouseId() == warehouseId) {
-                filtered.add(p);
-            }
-        }
-        return filtered;
+    // Day-8: default in interface; implemented in JPA impl
+    default List<Product> getAllProductByWarehouse(int warehouseId) throws SQLException {
+        return List.of();
     }
 }
