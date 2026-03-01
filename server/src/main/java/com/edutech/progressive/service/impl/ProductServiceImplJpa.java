@@ -1,7 +1,10 @@
 package com.edutech.progressive.service.impl;
 
 import com.edutech.progressive.entity.Product;
+import com.edutech.progressive.entity.Warehouse;
+import com.edutech.progressive.exception.InsufficientCapacityException;
 import com.edutech.progressive.repository.ProductRepository;
+import com.edutech.progressive.repository.WarehouseRepository;
 import com.edutech.progressive.service.ProductService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -14,9 +17,12 @@ import java.util.List;
 public class ProductServiceImplJpa implements ProductService {
 
     private final ProductRepository productRepository;
+    private final WarehouseRepository warehouseRepository;
 
-    public ProductServiceImplJpa(ProductRepository productRepository) {
+    public ProductServiceImplJpa(ProductRepository productRepository,
+                                 WarehouseRepository warehouseRepository) {
         this.productRepository = productRepository;
+        this.warehouseRepository = warehouseRepository;
     }
 
     @Override
@@ -40,7 +46,26 @@ public class ProductServiceImplJpa implements ProductService {
     @Override
     public int addProduct(Product product) throws SQLException {
         try {
+            // Determine warehouseId for capacity check (supports either FK or association)
+            int warehouseId = product.getWarehouseId();
+            if (warehouseId == 0 && product.getWarehouse() != null) {
+                warehouseId = product.getWarehouse().getWarehouseId();
+            }
+
+            Warehouse wh = warehouseRepository.findByWarehouseId(warehouseId);
+            if (wh == null) {
+                throw new SQLException("Warehouse not found for id: " + warehouseId);
+            }
+
+            int currentCount = productRepository.countByWarehouse_WarehouseId(warehouseId);
+            if (currentCount >= wh.getCapacity()) {
+                throw new InsufficientCapacityException(
+                        "Warehouse capacity reached for warehouseId=" + warehouseId);
+            }
+
             return productRepository.save(product).getProductId();
+        } catch (InsufficientCapacityException ice) {
+            throw ice; // bubble up to controller to map 400
         } catch (DataAccessException ex) {
             throw new SQLException("Failed to add product", ex);
         }
@@ -67,22 +92,20 @@ public class ProductServiceImplJpa implements ProductService {
     @Override
     public List<Product> getAllProductByWarehouse(int warehouseId) throws SQLException {
         try {
-            // 1) ✅ FK-based (no JOIN) – covers JDBC-seeded rows
+            // FK-based first (no JOIN)
             List<Product> byFk = productRepository.findAllByWarehouseId(warehouseId);
             if (byFk != null && !byFk.isEmpty()) return new ArrayList<>(byFk);
 
-            // 2) Association-based (JOIN)
+            // Association-based fallback
             List<Product> byAssoc = productRepository.findAllByWarehouse_WarehouseId(warehouseId);
             if (byAssoc != null && !byAssoc.isEmpty()) return new ArrayList<>(byAssoc);
 
-            // 3) FINAL FALLBACK: JDBC DAO – if test seeded via pure JDBC using DatabaseConnectionManager
+            // Optional final fallback via JDBC DAO if tests seed differently
             com.edutech.progressive.dao.ProductDAO jdbcDao = new com.edutech.progressive.dao.ProductDAOImpl();
             List<Product> all = jdbcDao.getAllProducts();
             List<Product> filtered = new ArrayList<>();
             for (Product p : all) {
-                if (p.getWarehouseId() == warehouseId) {
-                    filtered.add(p);
-                }
+                if (p.getWarehouseId() == warehouseId) filtered.add(p);
             }
             return filtered;
 

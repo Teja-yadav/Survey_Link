@@ -15,7 +15,7 @@ import java.util.List;
 public class WarehouseController {
 
     @Autowired
-    private WarehouseService warehouseService; 
+    private WarehouseService warehouseService;
 
     @GetMapping
     public ResponseEntity<List<Warehouse>> getAllWarehouses() {
@@ -68,13 +68,18 @@ public class WarehouseController {
         }
     }
 
-    @GetMapping("/supplier/{supplierId}")
-    public ResponseEntity<List<Warehouse>> getWarehousesBySupplier(@PathVariable int supplierId) {
-        try {
-            List<Warehouse> list = warehouseService.getWarehouseBySupplier(supplierId);
-            return ResponseEntity.ok(list);
-        } catch (SQLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+
+@GetMapping("/supplier/{supplierId}")
+public ResponseEntity<?> getWarehousesBySupplier(@PathVariable int supplierId) {
+    try {
+        List<Warehouse> list = warehouseService.getWarehouseBySupplier(supplierId);
+        return ResponseEntity.ok(list);
+    } catch (com.edutech.progressive.exception.NoWarehouseFoundForSupplierException noWh) {
+        // Day 9: BAD_REQUEST if no warehouses for the supplier
+        return ResponseEntity.badRequest().build();
+    } catch (SQLException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+}
+
 }

@@ -82,6 +82,25 @@ public class WarehouseServiceImplJpa implements WarehouseService {
 
     @Override
     public List<Warehouse> getWarehouseBySupplier(int supplierId) throws SQLException {
-        return new ArrayList<>(warehouseRepository.findAllBySupplier_SupplierId(supplierId));
+        try {
+            // Prefer FK-based (no JOIN) first
+            List<Warehouse> viaFk = warehouseRepository.findAllBySupplierId(supplierId);
+            if (viaFk != null && !viaFk.isEmpty()) {
+                return new ArrayList<>(viaFk);
+            }
+
+            // Association-based fallback (JOIN)
+            List<Warehouse> viaAssoc = warehouseRepository.findAllBySupplier_SupplierId(supplierId);
+            if (viaAssoc != null && !viaAssoc.isEmpty()) {
+                return new ArrayList<>(viaAssoc);
+            }
+
+            // Day 9: when nothing found
+            throw new com.edutech.progressive.exception.NoWarehouseFoundForSupplierException(
+                    "No warehouses found for supplierId=" + supplierId);
+
+        } catch (org.springframework.dao.DataAccessException ex) {
+            throw new SQLException("Failed to fetch warehouses for supplier id: " + supplierId, ex);
+        }
     }
 }
