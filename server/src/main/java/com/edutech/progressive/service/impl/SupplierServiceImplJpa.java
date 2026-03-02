@@ -21,9 +21,14 @@ import java.util.List;
 public class SupplierServiceImplJpa implements SupplierService {
 
     private final SupplierRepository supplierRepository;
-    private final WarehouseRepository warehouseRepository; // may be null in 1-arg ctor (unit tests)
-    private final ProductRepository productRepository;     // may be null in 1-arg ctor (unit tests)
+    private final WarehouseRepository warehouseRepository; // may be null in 1-arg ctor
+    private final ProductRepository productRepository;     // may be null in 1-arg ctor
 
+    // ✅ Optional field injection for ShipmentRepository to avoid context failures
+    @Autowired(required = false)
+    private com.edutech.progressive.repository.ShipmentRepository shipmentRepository;
+
+    // Preferred Spring constructor
     @Autowired
     public SupplierServiceImplJpa(SupplierRepository supplierRepository,
                                   WarehouseRepository warehouseRepository,
@@ -33,6 +38,7 @@ public class SupplierServiceImplJpa implements SupplierService {
         this.productRepository = productRepository;
     }
 
+    // Overloaded for tests that only pass SupplierRepository
     public SupplierServiceImplJpa(SupplierRepository supplierRepository) {
         this.supplierRepository = supplierRepository;
         this.warehouseRepository = null;
@@ -51,18 +57,13 @@ public class SupplierServiceImplJpa implements SupplierService {
     @Override
     public int addSupplier(Supplier supplier) throws SQLException {
         try {
-            // Day 9: uniqueness checks
             if (supplier.getUsername() != null) {
-                Supplier byUser = supplierRepository.findByUsername(supplier.getUsername());
-                if (byUser != null) {
-                    throw new SupplierAlreadyExistsException("Username already exists");
-                }
+                Supplier u = supplierRepository.findByUsername(supplier.getUsername());
+                if (u != null) throw new SupplierAlreadyExistsException("Username already exists");
             }
             if (supplier.getEmail() != null) {
-                Supplier byEmail = supplierRepository.findByEmail(supplier.getEmail());
-                if (byEmail != null) {
-                    throw new SupplierAlreadyExistsException("Email already exists");
-                }
+                Supplier e = supplierRepository.findByEmail(supplier.getEmail());
+                if (e != null) throw new SupplierAlreadyExistsException("Email already exists");
             }
             return supplierRepository.save(supplier).getSupplierId();
         } catch (SupplierAlreadyExistsException dup) {
@@ -86,7 +87,6 @@ public class SupplierServiceImplJpa implements SupplierService {
     @Override
     public void updateSupplier(Supplier supplier) throws SQLException {
         try {
-            // Day 9: username must be unique across others
             if (supplier.getUsername() != null) {
                 Supplier byUser = supplierRepository.findByUsername(supplier.getUsername());
                 if (byUser != null && byUser.getSupplierId() != supplier.getSupplierId()) {
@@ -105,6 +105,10 @@ public class SupplierServiceImplJpa implements SupplierService {
     @Transactional
     public void deleteSupplier(int supplierId) throws SQLException {
         try {
+            // Day 10: shipments -> products -> warehouses -> supplier
+            if (shipmentRepository != null) {
+                shipmentRepository.deleteBySupplierId(supplierId);
+            }
             if (productRepository != null) {
                 productRepository.deleteBySupplierId(supplierId);
             }
@@ -121,9 +125,7 @@ public class SupplierServiceImplJpa implements SupplierService {
     public Supplier getSupplierById(int supplierId) throws SQLException {
         try {
             Supplier s = supplierRepository.findBySupplierId(supplierId);
-            if (s == null) {
-                throw new SupplierDoesNotExistException("Supplier not found: " + supplierId);
-            }
+            if (s == null) throw new SupplierDoesNotExistException("Supplier not found: " + supplierId);
             return s;
         } catch (SupplierDoesNotExistException dne) {
             throw dne;
