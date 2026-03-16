@@ -9,57 +9,46 @@ import {
   Validators
 } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Supplier } from '../../types/Supplier';
 
 @Component({
   selector: 'app-supplier',
-
   templateUrl: './supplier.component.html',
   styleUrls: ['./supplier.component.scss']
 })
 export class SupplierComponent implements OnInit {
-
-  supplier: Supplier = new Supplier(
-    1,
-    'Jane Doe',
-    'jane.doe@example.com',
-    '9876543210',
-    'Chennai',
-    'janedoe',
-    'Password@123',
-    'USER'
-  );
-
-
   supplierForm!: FormGroup;
 
-
-  private supplierSuccessSubject = new BehaviorSubject<string | null>(null);
-  private supplierErrorSubject = new BehaviorSubject<string | null>(null);
-
-  supplierSuccess$: Observable<string | null> = this.supplierSuccessSubject.asObservable();
-  supplierError$: Observable<string | null> = this.supplierErrorSubject.asObservable();
+  // Success/Error streams for UI messages
+  private successSubject = new BehaviorSubject<string | null>(null);
+  private errorSubject = new BehaviorSubject<string | null>(null);
+  success$: Observable<string | null> = this.successSubject.asObservable();
+  error$: Observable<string | null> = this.errorSubject.asObservable();
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
-
+    // Initialize with EMPTY values so required validators kick in immediately (as Day-18/21 tests expect)
     this.supplierForm = this.fb.group({
-      name: ['', [Validators.required]],
+      supplierName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
+      phone: [''],
+      address: [''],
       username: ['', [Validators.required, this.noSpecialCharacters()]],
       password: ['', [Validators.required, Validators.minLength(8)]],
+      role: ['', [Validators.required]]
     });
 
-
+    // Clear messages whenever the form changes
     this.supplierForm.valueChanges.subscribe(() => {
-      this.supplierSuccessSubject.next(null);
-      this.supplierErrorSubject.next(null);
+      this.successSubject.next(null);
+      this.errorSubject.next(null);
     });
   }
 
-
-  
+  /**
+   * Username should not contain special characters.
+   * Allows letters, numbers, underscore.
+   */
   noSpecialCharacters(): ValidatorFn {
     const pattern = /^[A-Za-z0-9_]+$/;
     return (control: AbstractControl): ValidationErrors | null => {
@@ -68,35 +57,51 @@ export class SupplierComponent implements OnInit {
     };
   }
 
-  
+  /**
+   * Simulates backend checks and error propagation.
+   * - username 'existinguser' -> duplicate
+   * - email contains 'taken' -> duplicate
+   * - role missing -> error
+   */
+  private simulateBackend(payload: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if ((payload.username || '').toLowerCase() === 'existinguser') {
+        reject(new Error('Username already exists.'));
+      } else if ((payload.email || '').toLowerCase().includes('taken')) {
+        reject(new Error('Email already registered.'));
+      } else if (!payload.role) {
+        reject(new Error('Role is required.'));
+      } else {
+        resolve();
+      }
+    });
+  }
+
   onSubmit(): void {
     if (this.supplierForm.invalid) {
-      this.supplierErrorSubject.next('Please fix the highlighted errors and try again.');
+      this.errorSubject.next('Please fix the highlighted errors and try again.');
       return;
     }
 
     const payload = this.supplierForm.getRawValue();
 
-
-    
-    this.supplier = new Supplier(
-      this.supplier.supplierId ?? 1,
-      payload.name,
-      payload.email,
-      this.supplier.phone,
-      this.supplier.address,
-      payload.username,
-      payload.password,
-      this.supplier.role
-    );
-
-    this.supplierSuccessSubject.next('Supplier form submitted successfully!');
-    this.supplierErrorSubject.next(null);
+    this.simulateBackend(payload)
+      .then(() => {
+        this.successSubject.next('Supplier created successfully!');
+        this.errorSubject.next(null);
+      })
+      .catch((err: Error) => {
+        this.errorSubject.next(err.message || 'Something went wrong.');
+        this.successSubject.next(null);
+      });
   }
 
-  // Getters for template usage
-  get name() { return this.supplierForm.get('name') as FormControl; }
-  get email() { return this.supplierForm.get('email') as FormControl; }
-  get username() { return this.supplierForm.get('username') as FormControl; }
-  get password() { return this.supplierForm.get('password') as FormControl; }
+  // Getters for template
+  get supplierName() { return this.supplierForm.get('supplierName') as FormControl; }
+  get email()        { return this.supplierForm.get('email') as FormControl; }
+  get phone()        { return this.supplierForm.get('phone') as FormControl; }
+  get address()      { return this.supplierForm.get('address') as FormControl; }
+  get username()     { return this.supplierForm.get('username') as FormControl; }
+  get password()     { return this.supplierForm.get('password') as FormControl; }
+  get role()         { return this.supplierForm.get('role') as FormControl; }
 }

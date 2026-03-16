@@ -1,28 +1,27 @@
 <div class="container mt-4">
-  <h2>Supplier Form (Day 18)</h2>
+  <h2>Supplier Registration (Day 21)</h2>
 
-  <!-- Success / Error messages via async pipe -->
-  <div *ngIf="supplierSuccess$ | async as successMsg" class="alert alert-success" role="alert" aria-live="polite">
-    {{ successMsg }}
+  <!-- Success / Error messages -->
+  <div *ngIf="success$ | async as ok" class="alert alert-success" role="alert" aria-live="polite">
+    {{ ok }}
+  </div>
+  <div *ngIf="error$ | async as err" class="alert alert-danger" role="alert" aria-live="assertive">
+    {{ err }}
   </div>
 
-  <div *ngIf="supplierError$ | async as errorMsg" class="alert alert-danger" role="alert" aria-live="assertive">
-    {{ errorMsg }}
-  </div>
+  <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="card p-3" novalidate>
 
-  <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" novalidate class="card p-3">
-
-    <!-- Name -->
+    <!-- Supplier Name -->
     <div class="mb-3">
-      <label for="name" class="form-label">Name *</label>
+      <label for="supplierName" class="form-label">Supplier Name *</label>
       <input
+        id="supplierName"
         type="text"
-        id="name"
         class="form-control"
-        formControlName="name"
+        formControlName="supplierName"
         placeholder="Enter supplier name" />
-      <div class="text-danger mt-1" *ngIf="name.touched && name.invalid">
-        <small *ngIf="name.errors?.['required']">Name is required.</small>
+      <div class="text-danger mt-1" *ngIf="supplierName.touched && supplierName.invalid">
+        <small *ngIf="supplierName.errors?.['required']">Supplier name is required.</small>
       </div>
     </div>
 
@@ -30,8 +29,8 @@
     <div class="mb-3">
       <label for="email" class="form-label">Email *</label>
       <input
-        type="email"
         id="email"
+        type="email"
         class="form-control"
         formControlName="email"
         placeholder="name@example.com" />
@@ -41,20 +40,40 @@
       </div>
     </div>
 
+    <!-- Phone (optional) -->
+    <div class="mb-3">
+      <label for="phone" class="form-label">Phone</label>
+      <input
+        id="phone"
+        type="text"
+        class="form-control"
+        formControlName="phone"
+        placeholder="Optional" />
+    </div>
+
+    <!-- Address (optional) -->
+    <div class="mb-3">
+      <label for="address" class="form-label">Address</label>
+      <input
+        id="address"
+        type="text"
+        class="form-control"
+        formControlName="address"
+        placeholder="Optional" />
+    </div>
+
     <!-- Username -->
     <div class="mb-3">
       <label for="username" class="form-label">Username *</label>
       <input
-        type="text"
         id="username"
+        type="text"
         class="form-control"
         formControlName="username"
-        placeholder="Enter username (alphanumeric/underscore only)" />
+        placeholder="Alphanumeric/underscore only" />
       <div class="text-danger mt-1" *ngIf="username.touched && username.invalid">
         <small *ngIf="username.errors?.['required']">Username is required.</small>
-        <small *ngIf="username.errors?.['specialChars']">
-          Only letters, numbers, and underscore are allowed.
-        </small>
+        <small *ngIf="username.errors?.['specialChars']">Only letters, numbers, and underscore are allowed.</small>
       </div>
     </div>
 
@@ -62,8 +81,8 @@
     <div class="mb-3">
       <label for="password" class="form-label">Password *</label>
       <input
-        type="password"
         id="password"
+        type="password"
         class="form-control"
         formControlName="password"
         placeholder="Min 8 characters" />
@@ -73,8 +92,20 @@
       </div>
     </div>
 
-    <button class="btn btn-primary" type="submit" [disabled]="supplierForm.invalid">
-      Submit
-    </button>
+    <!-- Role -->
+    <div class="mb-3">
+      <label for="role" class="form-label">Role *</label>
+      <select id="role" class="form-select" formControlName="role">
+        <option value="" disabled selected>Select a role</option>
+        <option value="USER">USER</option>
+        <option value="ADMIN">ADMIN</option>
+      </select>
+      <div class="text-danger mt-1" *ngIf="role.touched && role.invalid">
+        <small *ngIf="role.errors?.['required']">Role is required.</small>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="supplierForm.invalid">Submit</button>
   </form>
 </div>
+``

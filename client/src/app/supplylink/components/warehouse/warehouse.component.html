@@ -1,40 +1,46 @@
-<h2>Warehouse Management</h2>
+<div class="container mt-4">
+  <h2>Warehouse Registration (Day 21)</h2>
 
-<form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()">
-  <div>
-    <label>Warehouse ID:</label>
-    <input type="number" formControlName="warehouseId" />
-  </div>
+  <div *ngIf="success$ | async as ok" class="alert alert-success">{{ ok }}</div>
+  <div *ngIf="error$ | async as err" class="alert alert-danger">{{ err }}</div>
 
-  <div>
-    <label>Supplier ID:</label>
-    <input type="number" formControlName="supplierId" />
-    <div *ngIf="warehouseForm.get('supplierId')?.invalid && warehouseForm.get('supplierId')?.touched">
-      Supplier ID must be greater than 0.
+  <form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()" class="card p-3" novalidate>
+
+    <!-- Supplier ID -->
+    <div class="mb-3">
+      <label for="supplierId" class="form-label">Supplier ID *</label>
+      <input id="supplierId" type="number" class="form-control" formControlName="supplierId" placeholder="Enter supplier ID">
+      <div class="text-danger mt-1" *ngIf="supplierId.touched && supplierId.invalid">
+        <small *ngIf="supplierId.errors?.['required']">Supplier ID is required.</small>
+        <small *ngIf="supplierId.errors?.['min']">Supplier ID must be a positive number.</small>
+      </div>
     </div>
-  </div>
 
-  <div>
-    <label>Warehouse Name:</label>
-    <input type="text" formControlName="warehouseName" />
-    <div *ngIf="warehouseForm.get('warehouseName')?.invalid && warehouseForm.get('warehouseName')?.touched">
-      Warehouse Name is required.
+    <!-- Warehouse Name -->
+    <div class="mb-3">
+      <label for="warehouseName" class="form-label">Warehouse Name *</label>
+      <input id="warehouseName" type="text" class="form-control" formControlName="warehouseName" placeholder="Enter warehouse name">
+      <div class="text-danger mt-1" *ngIf="warehouseName.touched && warehouseName.invalid">
+        <small *ngIf="warehouseName.errors?.['required']">Warehouse name is required.</small>
+      </div>
     </div>
-  </div>
 
-  <div>
-    <label>Location:</label>
-    <input type="text" formControlName="location" />
-  </div>
-
-  <div>
-    <label>Capacity:</label>
-    <input type="number" formControlName="capacity" />
-    <div *ngIf="warehouseForm.get('capacity')?.invalid && warehouseForm.get('capacity')?.touched">
-      Capacity must be non‑negative.
+    <!-- Location (optional) -->
+    <div class="mb-3">
+      <label for="location" class="form-label">Location</label>
+      <input id="location" type="text" class="form-control" formControlName="location" placeholder="Optional">
     </div>
-  </div>
 
-  <button type="submit" [disabled]="warehouseForm.invalid">Submit</button>
-</form>
-``
+    <!-- Capacity -->
+    <div class="mb-3">
+      <label for="capacity" class="form-label">Capacity *</label>
+      <input id="capacity" type="number" class="form-control" formControlName="capacity" placeholder="0 or more">
+      <div class="text-danger mt-1" *ngIf="capacity.touched && capacity.invalid">
+        <small *ngIf="capacity.errors?.['required']">Capacity is required.</small>
+        <small *ngIf="capacity.errors?.['min']">Capacity must be non-negative.</small>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="warehouseForm.invalid">Submit</button>
+  </form>
+</div>
