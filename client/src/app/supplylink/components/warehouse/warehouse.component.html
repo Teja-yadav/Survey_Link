@@ -1,40 +1,36 @@
 <div class="container mt-4">
-  <h2>Warehouse Registration (Day 21)</h2>
+  <h2>Warehouse Registration</h2>
 
   <div *ngIf="success$ | async as ok" class="alert alert-success">{{ ok }}</div>
   <div *ngIf="error$ | async as err" class="alert alert-danger">{{ err }}</div>
 
   <form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()" class="card p-3" novalidate>
 
-    <!-- Supplier ID -->
     <div class="mb-3">
       <label for="supplierId" class="form-label">Supplier ID *</label>
-      <input id="supplierId" type="number" class="form-control" formControlName="supplierId" placeholder="Enter supplier ID">
+      <input id="supplierId" type="number" class="form-control" formControlName="supplierId">
       <div class="text-danger mt-1" *ngIf="supplierId.touched && supplierId.invalid">
         <small *ngIf="supplierId.errors?.['required']">Supplier ID is required.</small>
-        <small *ngIf="supplierId.errors?.['min']">Supplier ID must be a positive number.</small>
+        <small *ngIf="supplierId.errors?.['min']">Supplier ID must be positive.</small>
       </div>
     </div>
 
-    <!-- Warehouse Name -->
     <div class="mb-3">
       <label for="warehouseName" class="form-label">Warehouse Name *</label>
-      <input id="warehouseName" type="text" class="form-control" formControlName="warehouseName" placeholder="Enter warehouse name">
+      <input id="warehouseName" type="text" class="form-control" formControlName="warehouseName">
       <div class="text-danger mt-1" *ngIf="warehouseName.touched && warehouseName.invalid">
         <small *ngIf="warehouseName.errors?.['required']">Warehouse name is required.</small>
       </div>
     </div>
 
-    <!-- Location (optional) -->
     <div class="mb-3">
       <label for="location" class="form-label">Location</label>
-      <input id="location" type="text" class="form-control" formControlName="location" placeholder="Optional">
+      <input id="location" type="text" class="form-control" formControlName="location">
     </div>
 
-    <!-- Capacity -->
     <div class="mb-3">
       <label for="capacity" class="form-label">Capacity *</label>
-      <input id="capacity" type="number" class="form-control" formControlName="capacity" placeholder="0 or more">
+      <input id="capacity" type="number" class="form-control" formControlName="capacity">
       <div class="text-danger mt-1" *ngIf="capacity.touched && capacity.invalid">
         <small *ngIf="capacity.errors?.['required']">Capacity is required.</small>
         <small *ngIf="capacity.errors?.['min']">Capacity must be non-negative.</small>
