@@ -1,6 +1,7 @@
 package com.edutech.progressive.controller;
 
 import com.edutech.progressive.entity.Insurance;
+<<<<<<< HEAD
 import com.edutech.progressive.service.impl.InsuranceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,10 +11,27 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.SQLException;
 import java.util.List;
 
+=======
+import com.edutech.progressive.service.InsuranceService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+>>>>>>> b6b56768fe7eb7203f9202acf20e969d40768b6e
 @RestController
 @RequestMapping("/insurance")
 public class InsuranceController {
 
+<<<<<<< HEAD
     @Autowired
     InsuranceServiceImpl insuranceService;
 
@@ -26,10 +44,26 @@ public class InsuranceController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+=======
+
+    private InsuranceService insuranceService;
+
+    
+
+    @Autowired
+    public InsuranceController(InsuranceService insuranceService) {
+        this.insuranceService = insuranceService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Insurance>> getAllInsurances() {
+        return ResponseEntity.status(200).body(insuranceService.getAllInsurances());
+>>>>>>> b6b56768fe7eb7203f9202acf20e969d40768b6e
     }
 
     @GetMapping("/{insuranceId}")
     public ResponseEntity<Insurance> getInsuranceById(@PathVariable int insuranceId) {
+<<<<<<< HEAD
         try {
             Insurance insurance = insuranceService.getInsuranceById(insuranceId);
             if (insurance != null) {
@@ -40,10 +74,16 @@ public class InsuranceController {
         } catch (SQLException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+=======
+        Insurance i = insuranceService.getInsuranceById(insuranceId);
+        if(i==null) return ResponseEntity.status(404).build();
+        return ResponseEntity.status(200).body(insuranceService.getInsuranceById(insuranceId));
+>>>>>>> b6b56768fe7eb7203f9202acf20e969d40768b6e
     }
 
     @PostMapping
     public ResponseEntity<Integer> createInsurance(@RequestBody Insurance insurance) {
+<<<<<<< HEAD
         try {
             int insuranceId = insuranceService.addInsurance(insurance);
             return new ResponseEntity<>(insuranceId, HttpStatus.CREATED);
@@ -61,10 +101,24 @@ public class InsuranceController {
         } catch (SQLException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+=======
+        return ResponseEntity.status(201).body(insuranceService.addInsurance(insurance));
+    }
+
+
+    @PutMapping("/{insuranceId}")    
+    public ResponseEntity<Void> updateInsurance(@PathVariable int insuranceId, @RequestBody Insurance insurance) {
+        Insurance i = insuranceService.getInsuranceById(insuranceId);
+        if(i==null) return ResponseEntity.status(404).build();
+        insurance.setInsuranceId(insuranceId);
+        insuranceService.updateInsurance(insurance);
+        return ResponseEntity.status(200).build();
+>>>>>>> b6b56768fe7eb7203f9202acf20e969d40768b6e
     }
 
     @DeleteMapping("/{insuranceId}")
     public ResponseEntity<Void> deleteInsurance(@PathVariable int insuranceId) {
+<<<<<<< HEAD
         try {
             insuranceService.deleteInsurance(insuranceId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -73,3 +127,11 @@ public class InsuranceController {
         }
     }
 }
+=======
+        Insurance i = insuranceService.getInsuranceById(insuranceId);
+        if(i==null) return ResponseEntity.status(404).build();
+        insuranceService.deleteInsurance(insuranceId);
+        return ResponseEntity.status(200).build();
+    }
+}
+>>>>>>> b6b56768fe7eb7203f9202acf20e969d40768b6e

@@ -1,5 +1,6 @@
 package com.edutech.progressive.config;
 
+<<<<<<< HEAD
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,3 +29,8 @@ public class Configurations {
         };
     }
 }
+=======
+public class Configurations {
+
+}
+>>>>>>> b6b56768fe7eb7203f9202acf20e969d40768b6e

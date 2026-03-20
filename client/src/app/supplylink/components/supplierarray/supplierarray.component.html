@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div *ngFor="let supplier of supplierList">
   <p>
       {{ supplier.supplierId }}
@@ -9,3 +10,19 @@
 
   </p>
 </div>
+=======
+
+<div *ngIf="supplierList?.length; else noData">
+  <h2>Supplier List</h2>
+
+<div *ngIf="supplierList?.length; else noData">
+  <div *ngFor="let s of supplierList">
+    <p>{{ s.supplierName }} {{ s.email}}</p>
+
+  </div>
+</div>
+
+<ng-template #noData>
+  <p>No suppliers found.</p>
+</ng-template>
+>>>>>>> b6b56768fe7eb7203f9202acf20e969d40768b6e

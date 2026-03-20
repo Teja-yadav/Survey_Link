@@ -1,5 +1,6 @@
 package com.edutech.progressive.repository;
 
+<<<<<<< HEAD
 
 import com.edutech.progressive.entity.Shipment;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,3 +30,21 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Integer> {
     @Query("DELETE FROM Shipment s WHERE s.warehouse.warehouseId in (Select w.warehouseId from Warehouse w where w.supplier.supplierId = :supplierId)")
     void deleteBySupplierId(@Param("supplierId") int supplierId);
 }
+=======
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.edutech.progressive.entity.Shipment;
+
+@Repository
+public interface ShipmentRepository extends JpaRepository<Shipment, Integer>{
+
+    Shipment findByShipmentId(int shipmentId);
+
+    void deleteByWarehouse_WarehouseId(int warehouseId);
+
+    void deleteByProduct_ProductId(int productId);
+
+    void deleteByWarehouse_Supplier_SupplierId(int supplierId);
+}
+>>>>>>> b6b56768fe7eb7203f9202acf20e969d40768b6e

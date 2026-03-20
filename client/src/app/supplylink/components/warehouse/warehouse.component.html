@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()" class="user-form">
   <h2>Create Warehouse</h2>
   <div class="form-group">
@@ -42,3 +43,47 @@
       </div>
   </ng-container>
 </form>
+=======
+<div class="container mt-4">
+  <h2>Warehouse Registration</h2>
+
+  <div *ngIf="success$ | async as ok" class="alert alert-success">{{ ok }}</div>
+  <div *ngIf="error$ | async as err" class="alert alert-danger">{{ err }}</div>
+
+  <form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()" class="card p-3" novalidate>
+
+    <div class="mb-3">
+      <label for="supplierId" class="form-label">Supplier ID *</label>
+      <input id="supplierId" type="number" class="form-control" formControlName="supplierId">
+      <div class="text-danger mt-1" *ngIf="supplierId.touched && supplierId.invalid">
+        <small *ngIf="supplierId.errors?.['required']">Supplier ID is required.</small>
+        <small *ngIf="supplierId.errors?.['min']">Supplier ID must be positive.</small>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="warehouseName" class="form-label">Warehouse Name *</label>
+      <input id="warehouseName" type="text" class="form-control" formControlName="warehouseName">
+      <div class="text-danger mt-1" *ngIf="warehouseName.touched && warehouseName.invalid">
+        <small *ngIf="warehouseName.errors?.['required']">Warehouse name is required.</small>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="location" class="form-label">Location</label>
+      <input id="location" type="text" class="form-control" formControlName="location">
+    </div>
+
+    <div class="mb-3">
+      <label for="capacity" class="form-label">Capacity *</label>
+      <input id="capacity" type="number" class="form-control" formControlName="capacity">
+      <div class="text-danger mt-1" *ngIf="capacity.touched && capacity.invalid">
+        <small *ngIf="capacity.errors?.['required']">Capacity is required.</small>
+        <small *ngIf="capacity.errors?.['min']">Capacity must be non-negative.</small>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="warehouseForm.invalid">Submit</button>
+  </form>
+</div>
+>>>>>>> b6b56768fe7eb7203f9202acf20e969d40768b6e
